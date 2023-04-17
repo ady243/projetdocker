@@ -1,7 +1,23 @@
-FROM alpine:latest
+FROM php:8.1-fpm-alpine
 
-RUN apk update && \
-    apk add --no-cache curl php php-json php-phar php-openssl && \
-    curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN apk add --no-cache \
+    curl \
+    icu-dev \
+    libzip-dev \
+    unzip \
+    git \
+    mariadb-client
 
-CMD ["/usr/local/bin/composer"]
+RUN docker-php-ext-configure intl \
+    && docker-php-ext-install -j$(nproc) \
+    intl \
+    opcache \
+    pdo \
+    pdo_mysql \
+    zip
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www/symfony
+
+CMD composer install ; php -S 0.0.0.0:8000 -t public
