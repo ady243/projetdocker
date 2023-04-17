@@ -16,28 +16,16 @@ services:
     environment:
       DATABASE_URL: "mysql://symfony:password@db:3306/symfony?serverVersion=mariadb-10.5.0"
 
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
   db:
-    image: mariadb:10.5
-    container_name: mariadb
+    image: postgres
+    restart: always
     environment:
-      MYSQL_DATABASE: symfony
-      MYSQL_USER: symfony
-      MYSQL_PASSWORD: password
-      MYSQL_RANDOM_ROOT_PASSWORD: '1'
-    ports:
-      - "3307:3306"
+      POSTGRES_PASSWORD: docker
+      
     volumes:
-      - db_data:/var/lib/mysql
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    environment:
-      PMA_HOST: db
-      PMA_USER: symfony
-      PMA_PASSWORD: password
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-volumes:
-  db_data: {}
+      - /var/lib/postgresql/data
